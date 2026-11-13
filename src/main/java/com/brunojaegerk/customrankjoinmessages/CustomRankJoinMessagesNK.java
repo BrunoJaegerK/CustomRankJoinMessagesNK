@@ -105,7 +105,9 @@ public final class CustomRankJoinMessagesNK extends PluginBase implements Listen
             }
 
             // LuckPerms returns a CompletableFuture<User> from UserManager#getUser.
-            Object user = userResult.getClass().getMethod("join").invoke(userResult);
+            Object user = userResult instanceof java.util.concurrent.CompletableFuture<?> future
+                    ? future.join()
+                    : userResult;
             if (user == null) {
                 return "default";
             }
