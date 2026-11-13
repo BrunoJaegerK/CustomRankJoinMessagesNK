@@ -1,0 +1,8 @@
+name: CustomRankJoinMessagesNK
+main: com.brunojaegerk.customrankjoinmessages.CustomRankJoinMessagesNK
+version: "1.0.0"
+api: ["1.0.0"]
+author: BrunoJaegerK
+description: Custom join and quit messages based on LuckPerms primary groups.
+softdepend:
+  - LuckPerms
