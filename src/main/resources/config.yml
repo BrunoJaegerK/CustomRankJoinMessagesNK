@@ -1,0 +1,22 @@
+# Enable or disable join and quit messages independently.
+ModifyJoinMessages: true
+ModifyLeaveMessages: true
+
+# The keys must match LuckPerms primary group names.
+# If LuckPerms is not installed, or a group has no custom message,
+# the "default" message is used.
+# Available placeholder: {name}
+
+joinMessages:
+  owner: "§l§7[§a+§7] [§cOwner§7] {name}"
+  developer: "§l§7[§a+§7] [§bDeveloper§7] {name}"
+  moderator: "§l§7[§a+§7] [§9Moderator§7] {name}"
+  vip++: "§l§7[§a+§7] [§eVIP++§7] {name}"
+  default: "§l§7[§a+§7] {name}"
+
+leaveMessages:
+  owner: "§l§7[§c-§7] [§cOwner§7] {name}"
+  developer: "§l§7[§c-§7] [§bDeveloper§7] {name}"
+  moderator: "§l§7[§c-§7] [§dModerator§7] {name}"
+  vip++: "§l§7[§c-§7] [§eVIP++§7] {name}"
+  default: "§l§7[§c-§7] {name}"
