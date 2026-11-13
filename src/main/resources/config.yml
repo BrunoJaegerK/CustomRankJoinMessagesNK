@@ -2,11 +2,8 @@
 ModifyJoinMessages: true
 ModifyLeaveMessages: true
 
-# The keys must match LuckPerms primary group names.
-# If LuckPerms is not installed, or a group has no custom message,
-# the "default" message is used.
-# Available placeholder: {name}
-
+# Keys must match LuckPerms primary group names. Missing groups use "default".
+# Available message placeholder: {name}
 joinMessages:
   owner: "§l§7[§a+§7] [§cOwner§7] {name}"
   developer: "§l§7[§a+§7] [§bDeveloper§7] {name}"
@@ -20,3 +17,40 @@ leaveMessages:
   moderator: "§l§7[§c-§7] [§dModerator§7] {name}"
   vip++: "§l§7[§c-§7] [§eVIP++§7] {name}"
   default: "§l§7[§c-§7] {name}"
+
+# Sounds are heard by all other online players, not by the player joining/leaving.
+# Use Bedrock/Nukkit sound identifiers. Set enabled: false to disable an individual sound.
+# Missing rank entries fall back to "default".
+joinSounds:
+  owner:
+    enabled: true
+    sound: "random.levelup"
+  developer:
+    enabled: true
+    sound: "random.orb"
+  moderator:
+    enabled: true
+    sound: "random.pop"
+  vip++:
+    enabled: true
+    sound: "random.levelup"
+  default:
+    enabled: true
+    sound: "random.pop"
+
+leaveSounds:
+  owner:
+    enabled: true
+    sound: "random.pop"
+  developer:
+    enabled: true
+    sound: "random.orb"
+  moderator:
+    enabled: true
+    sound: "random.pop"
+  vip++:
+    enabled: true
+    sound: "random.pop"
+  default:
+    enabled: true
+    sound: "random.pop"
