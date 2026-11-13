@@ -1,35 +1,37 @@
 # CustomRankJoinMessagesNK
 
-Custom join and quit messages and rank-based sounds for **NukkitPetteriM1Edition**, selected using the player's primary group in **LuckPerms**.
+Mensajes personalizados de entrada y salida, además de sonidos por rango para **NukkitPetteriM1Edition**, según el grupo principal del jugador en **LuckPerms**.
 
-Created by **BrunoJaegerK**.
+Desarrollado por **BrunoJaegerK**.
 
-## Features
+## ✨ Características
 
-- Custom join and quit messages by LuckPerms primary group.
-- A configurable join sound and quit sound for each rank.
-- Sounds are heard by all other online players, including players in other worlds; the joining/leaving player is excluded.
-- Enable or disable join and quit messages independently.
-- Enable or disable each rank's join/quit sound independently.
-- `{name}` placeholder for the player's username.
-- Case-insensitive group matching.
-- LuckPerms is optional: when unavailable, the plugin uses the default entries.
-- Unknown groups fall back to default.
+- Mensajes personalizados al entrar y salir, configurados por grupo principal de LuckPerms.
+- Sonido de entrada y sonido de salida configurables para cada rango.
+- Los sonidos los escuchan todos los demás jugadores conectados, incluso si están en otros mundos. El jugador que entra o sale no escucha su propio sonido.
+- Activación o desactivación independiente de los mensajes de entrada y salida.
+- Activación o desactivación independiente de cada sonido por rango y evento.
+- Placeholder `{name}` para mostrar el nombre del jugador.
+- Comparación de nombres de grupos sin distinguir mayúsculas y minúsculas.
+- LuckPerms es opcional: si no está disponible, se utilizan las configuraciones `default`.
+- Los grupos que no tengan una configuración propia utilizan los valores de `default`.
 
-## Requirements
+## 📋 Requisitos
 
 - NukkitPetteriM1Edition.
 - Java 17.
-- LuckPerms is optional and only needed for rank-specific entries.
+- LuckPerms es opcional y solo se necesita para utilizar configuraciones específicas por rango.
 
-## Installation
+## 📥 Instalación
 
-1. Download the latest `CustomRankJoinMessagesNK` JAR from the repository's **Actions** artifact or **Releases**.
-2. Put the JAR in your server's `plugins` folder.
-3. Start the server once to generate `plugins/CustomRankJoinMessagesNK/config.yml`.
-4. Edit the configuration and restart the server.
+1. Descarga el JAR más reciente desde los artefactos de **Actions** o desde **Releases** del repositorio.
+2. Coloca el archivo JAR en la carpeta `plugins` de tu servidor.
+3. Inicia el servidor una vez para generar `plugins/CustomRankJoinMessagesNK/config.yml`.
+4. Edita la configuración a tu gusto y reinicia el servidor.
 
-## Configuration
+## ⚙️ Configuración
+
+Ejemplo de configuración:
 
 ~~~yaml
 ModifyJoinMessages: true
@@ -66,20 +68,22 @@ leaveSounds:
     sound: "random.pop"
 ~~~
 
-### Sound configuration
+### 🔊 Configuración de sonidos
 
-Each rank under `joinSounds` and `leaveSounds` has two settings:
+Cada rango dentro de `joinSounds` y `leaveSounds` tiene dos opciones:
 
-- `enabled`: `true` or `false`. Set it to `false` to mute that rank for that event.
-- `sound`: the sound identifier, written exactly as shown in the sound list below.
+- `enabled`: acepta `true` o `false`. Usa `false` para desactivar el sonido de ese rango en ese evento.
+- `sound`: identificador del sonido. Debe escribirse exactamente como aparece en la lista de sonidos.
 
-Use separate identifiers for each rank and event to make the sounds different. If a rank has no entry, the `default` sound entry is used. Sounds are sent individually at each listener's position, so every other online player can hear them regardless of distance or world. The player joining or leaving is excluded.
+Puedes asignar identificadores diferentes a cada rango y evento. Si un rango no tiene una entrada configurada, se utilizará el sonido de `default`.
 
-### Available sound identifiers
+El plugin envía el sonido en la posición de cada jugador que lo escucha. Así, todos los demás jugadores conectados pueden oírlo sin importar la distancia o el mundo en el que estén. Se excluye al jugador que provoca el evento de entrada o salida.
 
-The following are examples of valid identifiers included in the `cn.nukkit.level.Sound` enum in the **NukkitPetteriM1Edition release** source. Use the identifier exactly as written, including dots and underscores.
+### 🎵 Identificadores de sonidos disponibles
 
-**Notification and short effects**
+Estos son algunos ejemplos de identificadores incluidos en la enumeración `cn.nukkit.level.Sound` de la versión **release de NukkitPetteriM1Edition**. Escríbelos exactamente igual, respetando puntos y guiones bajos.
+
+**Notificaciones y efectos cortos**
 
 ~~~yaml
 random.levelup
@@ -96,7 +100,7 @@ random.splash
 random.potion.brewed
 ~~~
 
-**Musical and note sounds**
+**Sonidos musicales y notas**
 
 ~~~yaml
 note.pling
@@ -105,7 +109,7 @@ note.cow_bell
 note.enderdragon
 ~~~
 
-**Fireworks, portals and special effects**
+**Fuegos artificiales, portales y efectos especiales**
 
 ~~~yaml
 firework.blast
@@ -119,7 +123,7 @@ portal.trigger
 raid.horn
 ~~~
 
-**Blocks and environment**
+**Bloques y ambiente**
 
 ~~~yaml
 block.bell.hit
@@ -134,7 +138,7 @@ ambient.cave
 ambient.weather.lightning.impact
 ~~~
 
-**Mobs and creatures**
+**Mobs y criaturas**
 
 ~~~yaml
 mob.allay.hurt
@@ -154,7 +158,7 @@ mob.ravager.roar
 mob.wolf.growl
 ~~~
 
-**Items and combat**
+**Objetos y combate**
 
 ~~~yaml
 item.trident.throw
@@ -168,33 +172,43 @@ crossbow.loading.start
 crossbow.loading.end
 ~~~
 
-This is a curated selection, not the entire sound catalog. The PM1E `Sound.java` source contains a much larger list of identifiers (including block, mob, item, ambient, music and UI sounds): [View the NukkitPetteriM1Edition sound list](https://github.com/PetteriM1/NukkitPetteriM1Edition/blob/release/src/main/java/cn/nukkit/level/Sound.java).
+Esta lista es una selección de ejemplos, no el catálogo completo. La clase `Sound.java` de PM1E contiene muchos más identificadores, incluidos sonidos de bloques, criaturas, objetos, ambiente, música e interfaz.
 
-**Compatibility note:** the sound identifier must exist in the Bedrock client version/resource pack used by the player. A valid server-side identifier may not produce audible sound if that client does not contain the corresponding sound event. Custom resource-pack sounds are not automatically registered by this plugin.
+➡️ [Consultar el catálogo completo de sonidos de NukkitPetteriM1Edition](https://github.com/PetteriM1/NukkitPetteriM1Edition/blob/release/src/main/java/cn/nukkit/level/Sound.java).
 
-### General configuration notes
+**Importante sobre compatibilidad:** el identificador debe existir en la versión del cliente Bedrock y en el paquete de recursos que utiliza cada jugador. Aunque el identificador sea válido en el servidor, el cliente podría no reproducirlo si no reconoce ese evento de sonido. Este plugin no registra automáticamente sonidos personalizados de un resource pack.
 
-- Group keys must match the primary group names configured in LuckPerms.
-- Group matching ignores uppercase/lowercase differences.
-- `{name}` is replaced with the player's username.
-- If LuckPerms is missing, the player's LuckPerms user is not loaded, or their group has no configured entry, the `default` entry is used.
-- Set `ModifyJoinMessages` or `ModifyLeaveMessages` to `false` to leave that event's default server message untouched. Sound settings are independent of these message toggles.
-- Use an empty string for a group message if you intentionally want that group's message to be blank.
+### 📝 Notas generales de configuración
 
-## Building
+- Las claves de los grupos deben coincidir con los nombres de los grupos principales configurados en LuckPerms.
+- La comparación de los nombres de grupo no distingue entre mayúsculas y minúsculas.
+- `{name}` se reemplaza por el nombre del jugador.
+- Si LuckPerms no está instalado, el usuario todavía no se ha cargado o el grupo no tiene una entrada configurada, se utilizará `default`.
+- Cambia `ModifyJoinMessages` o `ModifyLeaveMessages` a `false` para conservar el mensaje predeterminado del servidor en ese evento. La configuración de sonidos funciona independientemente de estas opciones.
+- Puedes dejar vacío el mensaje de un grupo si quieres que ese rango no muestre ningún mensaje personalizado.
 
-Build with Maven and Java 17:
+## 🛠️ Compilación
+
+Necesitas Maven y Java 17. Ejecuta:
 
 ~~~bash
 mvn clean package
 ~~~
 
-The output JAR is created in `target/CustomRankJoinMessagesNK-1.0.0.jar`.
+El archivo JAR se generará en:
 
-## Support
+~~~text
+target/CustomRankJoinMessagesNK-1.0.0.jar
+~~~
 
-Report bugs or request features through [GitHub Issues](https://github.com/BrunoJaegerK/CustomRankJoinMessagesNK/issues).
+## 🐛 Soporte y reportes
 
-## License
+Si encuentras un error o quieres solicitar una función, crea un reporte en [GitHub Issues](https://github.com/BrunoJaegerK/CustomRankJoinMessagesNK/issues).
 
-This project is distributed under the MIT License. See [LICENSE](LICENSE).
+## 📄 Licencia
+
+Este proyecto está distribuido bajo la **Licencia Pública General de GNU, versión 3 o cualquier versión posterior (GNU GPL-3.0-or-later)**.
+
+Puedes usar, estudiar, modificar y redistribuir el proyecto de acuerdo con los términos de esta licencia. Las versiones modificadas que distribuyas deben conservar la licencia GPL y poner a disposición el código fuente correspondiente.
+
+Consulta el archivo [LICENSE](LICENSE) para leer el texto completo de la licencia.
