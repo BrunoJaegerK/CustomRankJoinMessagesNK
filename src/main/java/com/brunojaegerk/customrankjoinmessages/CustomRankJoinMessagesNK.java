@@ -13,12 +13,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 
-/**
- * Custom join and quit messages selected by a player's LuckPerms primary group.
- * LuckPerms is optional; the configured default message is used when unavailable.
- */
+/** Rank-based join/quit messages and sounds using optional LuckPerms integration. */
 public final class CustomRankJoinMessagesNK extends PluginBase implements Listener {
-
     private Object luckPermsUserManager;
     private Method getUserMethod;
     private Method getPrimaryGroupMethod;
@@ -28,95 +24,66 @@ public final class CustomRankJoinMessagesNK extends PluginBase implements Listen
     public void onEnable() {
         saveDefaultConfig();
         initializeLuckPerms();
-
         getServer().getPluginManager().registerEvents(this, this);
         getLogger().info("CustomRankJoinMessagesNK enabled.");
-        if (luckPermsAvailable) {
-            getLogger().info("LuckPerms detected. Rank-based messages are active.");
-        } else {
-            getLogger().info("LuckPerms not detected. Using the default messages.");
-        }
+        getLogger().info(luckPermsAvailable
+                ? "LuckPerms detected. Rank-based messages and sounds are active."
+                : "LuckPerms not detected. Using the default messages and sounds.");
     }
 
     private void initializeLuckPerms() {
         Plugin luckPermsPlugin = getServer().getPluginManager().getPlugin("LuckPerms");
-        if (luckPermsPlugin == null) {
-            return;
-        }
+        if (luckPermsPlugin == null) return;
 
         try {
-            ClassLoader luckPermsClassLoader = luckPermsPlugin.getClass().getClassLoader();
-            Class<?> providerClass = Class.forName(
-                    "net.luckperms.api.LuckPermsProvider", true, luckPermsClassLoader
-            );
+            ClassLoader loader = luckPermsPlugin.getClass().getClassLoader();
+            Class<?> providerClass = Class.forName("net.luckperms.api.LuckPermsProvider", true, loader);
             Object luckPerms = providerClass.getMethod("get").invoke(null);
             Object userManager = luckPerms.getClass().getMethod("getUserManager").invoke(luckPerms);
-
-            Class<?> userManagerClass = Class.forName(
-                    "net.luckperms.api.model.user.UserManager", true, luckPermsClassLoader
-            );
+            Class<?> userManagerClass = Class.forName("net.luckperms.api.model.user.UserManager", true, loader);
             getUserMethod = userManagerClass.getMethod("getUser", UUID.class);
-            Class<?> userClass = Class.forName(
-                    "net.luckperms.api.model.user.User", true, luckPermsClassLoader
-            );
+            Class<?> userClass = Class.forName("net.luckperms.api.model.user.User", true, loader);
             getPrimaryGroupMethod = userClass.getMethod("getPrimaryGroup");
             luckPermsUserManager = userManager;
             luckPermsAvailable = true;
         } catch (ReflectiveOperationException | LinkageError exception) {
             luckPermsAvailable = false;
-            getLogger().warning("LuckPerms was found, but its API could not be accessed. Default messages will be used.");
+            getLogger().warning("LuckPerms was found, but its API could not be accessed. Default entries will be used.");
             getLogger().debug(exception.toString());
         }
     }
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
-        if (!getConfig().getBoolean("ModifyJoinMessages", true)) {
-            return;
-        }
-
         Player player = event.getPlayer();
         String group = getPrimaryGroup(player);
-        String message = getConfiguredMessage("joinMessages", group, player.getName());
-        event.setJoinMessage(message);
+        if (getConfig().getBoolean("ModifyJoinMessages", true)) {
+            event.setJoinMessage(getConfiguredMessage("joinMessages", group, player.getName()));
+        }
+        playRankSound("joinSounds", group, player);
     }
 
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
-        if (!getConfig().getBoolean("ModifyLeaveMessages", true)) {
-            return;
-        }
-
         Player player = event.getPlayer();
         String group = getPrimaryGroup(player);
-        String message = getConfiguredMessage("leaveMessages", group, player.getName());
-        event.setQuitMessage(message);
+        if (getConfig().getBoolean("ModifyLeaveMessages", true)) {
+            event.setQuitMessage(getConfiguredMessage("leaveMessages", group, player.getName()));
+        }
+        playRankSound("leaveSounds", group, player);
     }
 
     private String getPrimaryGroup(Player player) {
-        if (!luckPermsAvailable || luckPermsUserManager == null || getUserMethod == null) {
-            return "default";
-        }
-
+        if (!luckPermsAvailable || luckPermsUserManager == null || getUserMethod == null) return "default";
         try {
-            Object userResult = getUserMethod.invoke(luckPermsUserManager, player.getUniqueId());
-            if (userResult == null) {
-                return "default";
-            }
-
-            // LuckPerms returns a CompletableFuture<User> from UserManager#getUser.
-            Object user = userResult instanceof java.util.concurrent.CompletableFuture<?> future
-                    ? future.join()
-                    : userResult;
-            if (user == null) {
-                return "default";
-            }
-
+            Object result = getUserMethod.invoke(luckPermsUserManager, player.getUniqueId());
+            if (result == null) return "default";
+            // LuckPerms UserManager#getUser returns CompletableFuture<User>.
+            Object user = result instanceof java.util.concurrent.CompletableFuture<?> future
+                    ? future.join() : result;
+            if (user == null) return "default";
             String group = (String) getPrimaryGroupMethod.invoke(user);
-            if (group == null || group.isBlank()) {
-                return "default";
-            }
-            return group.toLowerCase(Locale.ROOT);
+            return group == null || group.isBlank() ? "default" : group.toLowerCase(Locale.ROOT);
         } catch (ReflectiveOperationException | LinkageError exception) {
             getLogger().debug("Could not read the LuckPerms group for " + player.getName() + ": " + exception);
             return "default";
@@ -124,31 +91,44 @@ public final class CustomRankJoinMessagesNK extends PluginBase implements Listen
     }
 
     private String getConfiguredMessage(String section, String group, String playerName) {
-        Map<String, Object> messages = getConfig().getSection(section);
-        Object configured = null;
+        Object configured = findGroupValue(getConfig().getSection(section), group);
+        return configured == null ? "" : String.valueOf(configured).replace("{name}", playerName);
+    }
 
-        if (messages != null) {
-            for (Map.Entry<String, Object> entry : messages.entrySet()) {
-                if (entry.getKey().equalsIgnoreCase(group)) {
-                    configured = entry.getValue();
-                    break;
-                }
-            }
+    private void playRankSound(String section, String group, Player subject) {
+        Object entry = findGroupValue(getConfig().getSection(section), group);
+        if (!(entry instanceof Map<?, ?> settings)) return;
 
-            if (configured == null) {
-                for (Map.Entry<String, Object> entry : messages.entrySet()) {
-                    if (entry.getKey().equalsIgnoreCase("default")) {
-                        configured = entry.getValue();
-                        break;
-                    }
-                }
+        Object enabledValue = settings.get("enabled");
+        if (enabledValue != null && !Boolean.parseBoolean(String.valueOf(enabledValue))) return;
+
+        Object soundValue = settings.get("sound");
+        if (soundValue == null) return;
+        String sound = String.valueOf(soundValue).trim();
+        if (sound.isEmpty()) return;
+
+        // Play at each listener's position so everyone hears it, regardless of distance/world.
+        // Exclude the player whose join/quit triggered the sound.
+        for (Player listener : getServer().getOnlinePlayers().values()) {
+            if (listener == null || !listener.isOnline()
+                    || listener.getUniqueId().equals(subject.getUniqueId())) continue;
+            try {
+                listener.getLevel().addSound(listener, sound, listener);
+            } catch (RuntimeException exception) {
+                getLogger().debug("Could not play sound '" + sound + "' for " + listener.getName()
+                        + ": " + exception.getMessage());
             }
         }
+    }
 
-        if (configured == null) {
-            return "";
+    private Object findGroupValue(Map<String, Object> entries, String group) {
+        if (entries == null) return null;
+        for (Map.Entry<String, Object> entry : entries.entrySet()) {
+            if (entry.getKey().equalsIgnoreCase(group)) return entry.getValue();
         }
-
-        return String.valueOf(configured).replace("{name}", playerName);
+        for (Map.Entry<String, Object> entry : entries.entrySet()) {
+            if (entry.getKey().equalsIgnoreCase("default")) return entry.getValue();
+        }
+        return null;
     }
 }
