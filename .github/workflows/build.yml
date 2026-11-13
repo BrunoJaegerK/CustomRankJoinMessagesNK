@@ -15,8 +15,15 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout plugin
         uses: actions/checkout@v4
+
+      - name: Checkout Nukkit PetteriM1 Edition source
+        uses: actions/checkout@v4
+        with:
+          repository: PetteriM1/NukkitPetteriM1Edition
+          ref: release
+          path: nukkit-source
 
       - name: Set up Java 17
         uses: actions/setup-java@v4
@@ -24,6 +31,9 @@ jobs:
           distribution: temurin
           java-version: "17"
           cache: maven
+
+      - name: Install Nukkit API into Maven local repository
+        run: mvn --batch-mode --no-transfer-progress -f nukkit-source/pom.xml install -DskipTests -Dmaven.javadoc.skip=true
 
       - name: Build plugin
         run: mvn --batch-mode --no-transfer-progress clean package
