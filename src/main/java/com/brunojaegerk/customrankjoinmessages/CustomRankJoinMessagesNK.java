@@ -21,6 +21,7 @@ public final class CustomRankJoinMessagesNK extends PluginBase implements Listen
 
     private Object luckPermsUserManager;
     private Method getUserMethod;
+    private Method getPrimaryGroupMethod;
     private boolean luckPermsAvailable;
 
     @Override
@@ -55,6 +56,10 @@ public final class CustomRankJoinMessagesNK extends PluginBase implements Listen
                     "net.luckperms.api.model.user.UserManager", true, luckPermsClassLoader
             );
             getUserMethod = userManagerClass.getMethod("getUser", UUID.class);
+            Class<?> userClass = Class.forName(
+                    "net.luckperms.api.model.user.User", true, luckPermsClassLoader
+            );
+            getPrimaryGroupMethod = userClass.getMethod("getPrimaryGroup");
             luckPermsUserManager = userManager;
             luckPermsAvailable = true;
         } catch (ReflectiveOperationException | LinkageError exception) {
@@ -94,12 +99,18 @@ public final class CustomRankJoinMessagesNK extends PluginBase implements Listen
         }
 
         try {
-            Object user = getUserMethod.invoke(luckPermsUserManager, player.getUniqueId());
+            Object userResult = getUserMethod.invoke(luckPermsUserManager, player.getUniqueId());
+            if (userResult == null) {
+                return "default";
+            }
+
+            // LuckPerms returns a CompletableFuture<User> from UserManager#getUser.
+            Object user = userResult.getClass().getMethod("join").invoke(userResult);
             if (user == null) {
                 return "default";
             }
 
-            String group = (String) user.getClass().getMethod("getPrimaryGroup").invoke(user);
+            String group = (String) getPrimaryGroupMethod.invoke(user);
             if (group == null || group.isBlank()) {
                 return "default";
             }
