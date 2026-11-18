@@ -1,5 +1,16 @@
 # CustomRankJoinMessagesNK
 
+<p align="center">
+  <img src="https://img.shields.io/badge/Minecraft-Bedrock%20Edition-43A047?style=for-the-badge&logo=minecraft&logoColor=white" alt="Minecraft Bedrock Edition">
+  <img src="https://img.shields.io/badge/Server-NukkitPetteriM1Edition-2196F3?style=for-the-badge" alt="NukkitPetteriM1Edition">
+  <img src="https://img.shields.io/badge/Java-17-orange?style=for-the-badge&logo=openjdk&logoColor=white" alt="Java 17">
+  <img src="https://img.shields.io/badge/Build-Maven-C71A36?style=for-the-badge&logo=apachemaven&logoColor=white" alt="Maven">
+</p>
+
+<p align="center"><b>Plugin de mensajes y sonidos personalizados de entrada y salida por rango para NukkitPetteriM1Edition, con integración opcional de LuckPerms.</b></p>
+
+---
+
 Mensajes personalizados de entrada y salida, además de sonidos por rango para **NukkitPetteriM1Edition**, según el grupo principal del jugador en **LuckPerms**.
 
 Desarrollado por **BrunoJaegerK**.
@@ -205,10 +216,16 @@ target/CustomRankJoinMessagesNK-1.0.0.jar
 
 Si encuentras un error o quieres solicitar una función, crea un reporte en [GitHub Issues](https://github.com/BrunoJaegerK/CustomRankJoinMessagesNK/issues).
 
-## 📄 Licencia
+## ℹ️ About
 
-Este proyecto está distribuido bajo la **Licencia Pública General de GNU, versión 3 o cualquier versión posterior (GNU GPL-3.0-or-later)**.
+Plugin de mensajes y sonidos personalizados de entrada y salida por rango para NukkitPetteriM1Edition, con integración opcional de LuckPerms.
 
-Puedes usar, estudiar, modificar y redistribuir el proyecto de acuerdo con los términos de esta licencia. Las versiones modificadas que distribuyas deben conservar la licencia GPL y poner a disposición el código fuente correspondiente.
+- **Autor:** BrunoJaegerK
+- **Servidor objetivo:** NukkitPetteriM1Edition (Minecraft Bedrock)
+- **Repositorio:** https://github.com/BrunoJaegerK/CustomRankJoinMessagesNK
 
-Consulta el archivo [LICENSE](LICENSE) para leer el texto completo de la licencia.
+## 📜 Licencia
+
+Este proyecto se distribuye bajo **GPL-3.0**. Puedes utilizarlo, modificarlo y redistribuirlo respetando los términos de la licencia, conservando los avisos de copyright y atribución aplicables. En el caso de GPL-3.0, las versiones modificadas distribuidas deben permanecer bajo GPL-3.0 y proporcionar el código fuente correspondiente.
+
+Consulta el archivo [LICENSE](LICENSE) para leer el texto completo.
